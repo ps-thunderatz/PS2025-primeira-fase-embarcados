@@ -1,227 +1,277 @@
-# STM32 Project Template
+<!-- markdownlint-disable -->
+<div align="center">
 
-Template para projetos usando microcontroladores da ST e o STM32CubeMX.
-Consiste numa estrutura especifica de pastas, um Makefile e
-alguns arquivos de configuração.
+# Template para Projetos STM32
 
-## Requisitos
+Template para projetos com microcontroladores STM32 usando STM32CubeMX e CMake
 
-* [STM32CubeMX](https://www.st.com/en/development-tools/stm32cubemx.html)
-  > É necessário colocar o local de instalação na varíavel de ambiente `CUBE_PATH`
+</div>
 
-* make
-  > Linux: `sudo apt install make`
-  >
-  > Windows: `msys2> pacman -S make`
+<div align="center">
+  <a href="https://www.st.com/en/development-tools/stm32cubemx.html"><img alt="Usa STM32CubeMX" src="https://img.shields.io/badge/usa-stm32cubemx-blue?style=for-the-badge&labelColor=38c1d0&color=45a4b8" height="30"></a>
+  <a href="https://en.wikipedia.org/wiki/Embedded_system"><img alt="Para Sistemas Embarcados" src="https://img.shields.io/badge/para-sistemas_embarcados-blue?style=for-the-badge&labelColor=adec37&color=27a744" height="30"></a>
+  <a href="LICENSE"><img alt="Licença MIT" src="https://img.shields.io/badge/licença-MIT-blue?style=for-the-badge&labelColor=ef4041&color=c1282d" height="30"></a>
+</div>
+<!-- markdownlint-restore -->
 
-* [GNU Arm Embedded Toolchain](https://developer.arm.com/open-source/gnu-toolchain/gnu-rm/downloads)
-  > É necessário que a pasta `bin` dessa instalação esteja no `PATH`
-  > e numa variável de ambiente `ARM_GCC_PATH`
+## 📑 Sumário
 
-* uncrustify
-  > Linux: `sudo apt install uncrustify`
-  >
-  > Windows: Baixe o .zip no [SourceForge](https://sourceforge.net/projects/uncrustify/files/). Adicione o local do executável na variável de ambiente `PATH`.
+- [📑 Sumário](#-sumário)
+- [📁 Estrutura de Pastas](#-estrutura-de-pastas)
+- [🛠 Configuração](#-configuração)
+- [🔨 Compilação](#-compilação)
+- [🚀 Execução](#-execução)
+- [🧪 Testes](#-testes)
+- [🐛 Depuração](#-depuração)
+- [💄 Formatação](#-formatação)
+- [📦 Submódulos](#-submódulos)
+- [🐋 Docker](#-docker)
+- [👥 Contribuição](#-contribuição)
+- [🙌 Agradecimentos](#-agradecimentos)
 
-* [Visual Studio Code](https://code.visualstudio.com/)
-  * [EditorConfig](https://marketplace.visualstudio.com/items?itemName=EditorConfig.EditorConfig)
-  * [C/C++](https://marketplace.visualstudio.com/items?itemName=ms-vscode.cpptools)
-  * [Cortex-Debug](https://marketplace.visualstudio.com/items?itemName=marus25.cortex-debug)
+## 📁 Estrutura de Pastas
 
-* [STM32 Cube Programmer](https://www.st.com/en/development-tools/stm32cubeprog.html) ou [J-Link](https://www.segger.com/downloads/jlink/)
-  > É necessário que o executável também esteja no `PATH`
+- **.docker/** - Configurações e scripts do Docker
+- **.github/** - Configurações do GitHub Actions
+- **.vscode/** - Configurações do Visual Studio Code
+- **build/** - Arquivos gerados durante a compilação (não versionado)
+- **cmake/** - Funções customizadas para CMake
+- **config/** - Configurações do projeto
+- **cube/** - Projeto do STM32CubeMX (.ioc e arquivos gerados)
+- **include/** - Cabeçalhos
+- **docs/** - Documentação gerada (não versionado)
+- **lib/** - Submódulos e bibliotecas externas
+- **src/** - Código fonte principal da aplicação
+- **test/** - Testes
 
-## Preparando
+## 🛠 Configuração
 
-### Projeto
+### 1. Projeto CubeMX
 
-Primeiro é necessário criar um projeto do Cube na pasta `cube/` com o nome desejado,
-que deve ter as seguintes opções de projeto:
+1. Crie um novo projeto na pasta `cube/`
+2. Configurações:
+    - **Project > Application Structure:** Basic
+    - **Project > Toolchain/IDE:** CMake
+    - **Code Generator > Generate peripheral initialization:** Pair of .c/.h
+    - **Code Generator > Delete previous generated files:** Ativado
 
-Project:
+### 2. CMakeLists.txt
 
-* Application Structure: *Basic*
-* [x] Do not generate the main()
-* Toolchain / IDE: *Makefile*
+Edite o arquivo principal `CMakeLists.txt` com as informações do seu projeto:
 
-Code Generator:
+```cmake
+# Nome do projeto (igual ao arquivo .ioc sem extensão)
+set(CMAKE_PROJECT_NAME meu_projeto)
 
-* STM32Cube Firmware Library Package: *Copy only the necessary library files*
-* Generated files:
-  * *Generate peripheral initialization as a pair of .c/.h files per peripheral*
-  * *Delete previously generated files when not re-generated*
+# Versão da placa (opcional)
+set(BOARD_VERSION "")
+```
 
-Um arquivo de exemplo se encontra em `cube/stm32_project_template.ioc` com todas as configurações necessárias.
+## 🔨 Compilação
 
-Para projetos existentes, basta mover o arquivo `.ioc` para a pasta `cube/`.
-
-### Gerando arquivos
-
-Com o arquivo do projeto na pasta correta, os seguintes comandos devem ser 
-executados (necessário apenas após dar checkout no repositório ou mudar o cube):
+Antes de iniciar, crie uma pasta `build/` na raiz do projeto
 
 ```bash
-make cube     # Gera arquivos do cube
-make prepare  # Apaga os arquivos do cube desnecessários e gera arquivos de configuração do VS Code
+mkdir build
+cd build
 ```
 
-Se, após modificar os arquivos do cube, ocorrer algum erro nos comandos acima,
-pode rodar `make clean_cube` para apagar os arquivos gerados e então tentar 
-novamente para que eles sejam gerados do zero.
-
-### [config.mk](config.mk)
-
-O arquivo [config.mk](config.mk) deve ser alterado de acordo com o projeto. 
-
-Para isso é necessário mudar o nome do projeto, o qual deve ter o mesmo do arquivo do Cube (por exemplo, `stm32_project_template.ioc`), porém sem a extensão `.ioc` (no caso de não se utilizar o versionamento dos arquivos do Cube).
-
-```Makefile
-PROJECT_NAME = stm32_project_template
-```
-
-Também é necessário alterar as seguintes configuraões:
-
-```Makefile
-DEVICE_FAMILY  := STM32F3xx
-DEVICE_TYPE    := STM32F303xx
-DEVICE_DEF     := STM32F303xE
-DEVICE         := STM32F303RE
-```
-
-Basta pegar o nome completo do microcontrolador e colocar nessas configurações, seguindo o padrão, fazendo as substituições que forem precisas por `x`.
-
-> Em caso de dúvida, veja o nome do arquivo `.ld` gerado na pasta `cube`,
-> ele contém o nome completo do microcontrolador.
-
-> Se estiver usando a família STM32G0, a variável `DEVICE_DEF` deverá ser igual à `DEVICE_TYPE`.
-
-Além disso, deve-se colocar o nome completo do arquivo com extensão `.ld` em `DEVICE_LD_FILE`.
-
-```Makefile
-# Linker script file without .ld extension
-# Find it on cube folder after code generation
-DEVICE_LD_FILE := STM32F303RETx_FLASH
-```
-
-As seguintes configurações não precisam ser alteradas, elas definem nomes de diretórios e opções de compilação, sendo o sugerido permanecerem com seus valores padrão:
-
-```Makefile
-# Lib dir
-LIB_DIR  := lib
-
-# Cube Directory
-CUBE_DIR := cube
-
-# Config Files Directory
-CFG_DIR :=
-
-# Tests Directory
-TEST_DIR := tests
-
-# Default values, can be set on the command line or here
-DEBUG   ?= 1
-VERBOSE ?= 0
-TEST    ?= 0
-```
-
-## Compilando
-
-Para compilar os arquivos rode
+Dentro dela, configure o ambiente com
 
 ```bash
-make
+cmake ..
 ```
 
-Às vezes, é necessário limpar os arquivos já compilados, se algum erro estiver 
-acontecendo, para isso faça:
+Depois, compile o projeto
 
 ```bash
-make clean
+make -j
 ```
 
-Isso apaga todos os arquivos de compilação gerados, exceto aqueles gerados a partir 
-das bibliotecas da ST geradas pelo Cube, isso ocorre para agilizar um novo build,
-já que raramente será necessário recompilar esses arquivos, mas caso seja necessário,
-é possível limpar todos os arquivos de compilação com
+> O parâmetro `-j` ativa a compilação paralela, usando mais núcleos do seu processador
+
+### Limpar arquivos
 
 ```bash
-make clean_all
+make clear       # Código do usuário
+make clear_cube  # Bibliotecas Cube
+make clear_all   # Tudo
 ```
 
-## Gravando
+### Manual
 
-Para gravar os arquivos na placa, rode
+Para obter uma lista completa de comandos, use
+
+```bash
+make help
+```
+
+## 🚀 Execução
+
+### Gravando via [STM32CubeProgrammer](https://www.st.com/en/development-tools/stm32cubeprog.html)
 
 ```bash
 make flash
 ```
 
-Ou, caso use um gravador com J-Link:
+### Gravando via J-Link
 
 ```bash
 make jflash
 ```
 
-## Tasks
+## 🧪 Testes
 
-No Visual Studio Code, pode pressionar `CTRL`+`SHIFT`+`B` e escolher uma das 
-opções da lista para executar os comandos de compilação e gravação mais rapidamente.
+Cada teste deve ser um arquivo independente na pasta `test/` com sua própria função `main()`
 
-* Clean Project (_make clean_)
-* Build Project (_make_)
-* Rebuild Project (_make clean && make_)
-* Flash Program (_make flash_)
-* Build and Flash (_make && make flash_)
-
-## Submódulos
-
-### Adicionando um submódulo
-
-Crie um diretório chamado `lib` e adicione o submódulo nele.
-
-Exemplo:
+Para compilar um teste específico, use `make meu_teste`. Por exemplo, para compilar o teste `test/test_led.c`:
 
 ```bash
-mkdir lib
-git submodule add --name STMSensors git@github.com:ThundeRatz/STMSensors.git lib/STMSensors
+make test_led
 ```
 
-### Inicializando um submódulo já existente
-
-Ao clonar um repositório que já tem submódulos, é necessário clonar os repositórios desse submódulo. Isso pode ser feito de duas formas, clonando junto com o repositório do projeto ou depois de já ter clonado.
-
-Exemplo:
-
-Para se clonar junto, deve-se fazer:
+Para gravar um teste específico, use `make flash_meu_teste`:
 
 ```bash
-git clone --recurse-submodules git@github.com:ThundeRatz/STM32ProjectTemplate.git
+make flash_test_led
 ```
 
-Para se clonar depois de já ter clonado o repositório do projeto:
+Para compilar todos os testes, use `make test_all`:
 
 ```bash
-git submodule update --init
+make test_all
 ```
 
-## Diretório de testes
+## 🐛 Depuração
 
-O diretório definido pela variável `TEST_DIR` contém arquivos para testes de partes específicas do projeto, separando isso do código do projeto em si. Esses arquivos devem ser implementados de acordo com as necessidades dos desenvolvedores.
-
-Para se habilitar a compilação e gravação dos testes, deve-se definir o valor da variável `TEST_NAME` para o nome do arquivo de teste que se quer utilizar, isso pode ser feito tanto no arquivo `config.mk`, quanto pela linha de comando ao rodar o `make`, como por exemplo:
+Para debugar o projeto usando o [`gdb`](https://www.gnu.org/software/gdb), primeiro instale o `gdb-multiarch`, no Ubuntu, execute:
 
 ```bash
-make flash TEST_NAME=test_digital_sensors
+sudo apt install gdb-multiarch
 ```
 
-Caso o valor da variável `TEST_NAME` seja vazio, não se utilizará o modo de teste.
+1. Configure o build para debug:
 
-Uma observação é que o comando `make clean`, quando `TEST_NAME` não for vazio, irá apagar os arquivos de compilação referentes aos arquivos de teste.
+```bash
+cmake .. -DBUILD_TYPE=Debug
+```
 
-Cada arquivo de teste no diretório de testes funciona de forma independente, ou seja, cada um deve ter uma função `main()`, sendo cada um compilado, gravado e executado separadamente.
+2. Gerar configurações de debug:
 
-Note que o nome do teste não inclui a extensão do arquivo.
+```bash
+make debug
+```
 
-## Debug
+Para debugar um teste, use `make debug_meu_teste`:
 
-> Em breve
+```bash
+make debug_test_led
+```
+
+3. Use a extensão Cortex-Debug no VS Code com uma das configurações:
+
+- [J-Link](https://www.segger.com/downloads/jlink/)
+- [OpenOCD](https://openocd.org/) (`sudo apt install openocd`)
+- [ST-Util](https://github.com/stlink-org/stlink) (`sudo apt install stlink-tools`)
+
+## 💄 Formatação
+
+### Formatação Automática
+
+Para formatar o projeto, usamos o `clang-format`. As configurações estão no arquivo `.clang-format`. Para instalar, no Ubuntu, execute:
+
+```bash
+sudo apt install clang-format
+```
+
+Para formatar o projeto, execute o seguinte comando na pasta `build`:
+
+```bash
+make format
+```
+
+Usamos o `clang-tidy` para seguir as melhores práticas de código. As regras de linting estão no arquivo `.clang-tidy`. Para instalar, no Ubuntu, execute:
+
+```bash
+sudo apt install clang-tidy
+```
+
+Para rodar o linter é preciso compilar o projeto com a variável `LINTER_MODE` do CMake. Para habilitar o linter, execute:
+
+```
+cmake .. -DLINTER_MODE=ON
+```
+
+Para desabilitar o linter, execute:
+
+```
+cmake .. -DLINTER_MODE=OFF
+```
+
+Também é possível rodar o linter e deixar ele corrigir automaticamente o código:
+
+```
+cmake .. -DLINTER_MODE=FIX
+```
+
+E então basta compilar o projeto normalmente:
+
+```bash
+make -j
+```
+
+## 📦 Submódulos
+
+### Adicionar novo submódulo
+
+```bash
+git submodule add --name lib_nome git@github.com:usuario/lib_nome.git lib/lib_nome
+```
+
+### Atualizar submódulos
+
+```bash
+git submodule update --init --recursive
+```
+
+## 🐋 Docker
+
+Para configuração do Docker no seu projeto, veja https://github.com/ThundeRatz/stm32cubemx_docker
+
+### Compilar usando container
+
+```bash
+docker compose run build
+```
+
+### Ambiente de desenvolvimento
+
+```bash
+docker compose run dev
+# Dentro do container:
+mkdir build
+cd build
+cmake ..
+make -j
+```
+
+## 👥 Contribuição
+
+1. Commits devem usar emojis descritivos:
+    - 🐛 Correções de bugs
+    - ✨ Novas funcionalidades
+    - 📝 Documentação
+    - 🎨 Formatação de código
+2. Siga o [GitHub Flow](https://guides.github.com/introduction/flow/)
+3. Mantenha a coesão do código e documentação
+4. Teste suas alterações antes de submeter pull requests
+
+
+## 🙌 Agradecimentos
+
+Este projeto não teria sido possível sem o suporte e colaboração da equipe **ThundeRatz** como um todo.
+As decisões de arquitetura e organização foram fortemente baseadas nas boas práticas adotadas nos projetos da equipe, garantindo um código mais modular, eficiente e escalável.
+
+
+Também gostaríamos de reconhecer o projeto **[Micras](https://github.com/Team-Micras/MicrasFirmware)**, cujo desenvolvimento serviu de base para diversas decisões adotadas aqui.
+As discussões técnicas e desafios enfrentados no Micras ajudaram a moldar a estrutura e as boas práticas deste template.

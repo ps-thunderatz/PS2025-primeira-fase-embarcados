@@ -9,34 +9,20 @@
     "files.eol": "\n",
     "files.encoding": "utf8",
 
-    "[c]": {
-        "editor.formatOnSave": true,
-        "editor.defaultFormatter": "zachflower.uncrustify",
-    },
+    "editor.defaultFormatter": "xaver.clang-format",
+    "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
 
-    "[makefile]": {
-        "editor.insertSpaces": false,
-    },
-
-    "[markdown]": {
-        "files.trimTrailingWhitespace": false,
-        "files.trimFinalNewlines": false,
+    "[c, cpp]": {
+        "editor.formatOnSave": true
     },
 
     "doxdocgen.generic.dateFormat": "MM/YYYY",
-    "doxdocgen.file.copyrightTag": [
-        "@copyright MIT License - Copyright (c) {year} ThundeRatz"
-    ],
-    "doxdocgen.generic.authorTag": "@author {author} <{email}>",
     "doxdocgen.file.fileOrder": [
         "file",
-        "author",
+        "empty",
         "brief",
+        "empty",
         "date",
-        "empty",
-        "copyright",
-        "empty",
         "custom"
     ],
-
 }
