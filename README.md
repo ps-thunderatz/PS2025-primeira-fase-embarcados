@@ -30,7 +30,7 @@ Para realizar a tarefinha, é necessário antes seguir os tutoriais existentes n
 
 ## ✨ Qual comportamento deve ser implementado
 
-A tarefinha consiste em um controle de videogame, que contém um analógico, um LED e dois botões. A placa usada é a plaquinha do nRFDongle, do ThunderVolt. O analógico será lido, ter seu valor processado e enviado pelo USB.
+A tarefinha consiste em um controle de videogame, que contém um analógico, um LED e dois botões. A placa usada é a plaquinha do nRFDongle, do ThunderVolt. O analógico será lido, ter seu valor processado e enviado pelo USB, além da leitura de um botão para acender o LED.
 
 > O analógico é um componete que possui dois potenciômetros, um para cada eixo, X e Y. Leia mais sobre analógicos [aqui](https://mundoprojetado.com.br/como-e-um-joystick-por-dentro/) e sobre potenciômetros [aqui](https://pt.wikipedia.org/wiki/Potenci%C3%B4metro).
 
@@ -42,10 +42,10 @@ Certo, mas como fazer isso?
 
 ### **1ª parte** - Configurando os arquivos do Cube
 
-Como vocês viram na aulinha de embarcados, antes de programar o seu microcontrolador é preciso configurar o arquivo do cube, setando os pinos do micro com as funções que precisamos no nosso projeto. O arquivo a ser configurado é o `dongle_joystick_v1.ioc` localizado na pasta `cube/`. As instruções de configuração do Cube estão mais detalhadas no [Apêndice A](#apêndice-a---configuração-do-stm32cubemx).
+Como vocês viram na aulinha de embarcados, antes de programar o seu microcontrolador é preciso configurar o arquivo do cube, setando os pinos do micro com as funções que precisamos no nosso projeto. O arquivo a ser configurado é o `dongle_joystick_v1.ioc` localizado na pasta `cube/`. Você deve fazer isso através do CubeMX, e as instruções de configuração do Cube estão mais detalhadas no [Apêndice A](#apêndice-a---configuração-do-stm32cubemx).
 Configurem os pinos conforme descrito abaixo:
 
--   LED - GPIO Output - PC12
+-   LED - GPIO Output - PC13
 -   Botão 1 - GPIO Input - PA8
 -   Botão 2 - GPIO Input - PB15
 
@@ -61,18 +61,23 @@ Os outros periféricos da plaquinha, como o USB já estão configurados.
 
 Usando um editor de texto (de preferência o VSCode), implemente as funções dos arquivos `led.cpp`, `button.cpp`, `joystick.cpp`. A implementação do USB já está feita.
 
+É recomendado a implementação de testes para cada componente, para verificar o funcionamento de cada classe. Os arquivos dos testes estão localizados em `testes/src`
+
 ## 🗂️ Organização do repositório
 
 Estrutura dos arquivos:
 
 -   `mcu.hpp` e `mcu.cpp`: Esses arquivos possuem as funções que configuram o microcontrolador, e NÃO devem ser editados.
--   `utils.hpp`: Esse arquivo pode ser incluído onde vocês quiserem, ele contém diversas funções matemáticas úteis que podem facilitar as contas de vocês. Sintam-se à vontade para incrementá-lo se acharem necessário. As funções usadas nesse arquivo são feitas usando o que chamamos de operador ternário, que nada mais é que uma forma de simplificar if's e else's.
+-   `utils.hpp`: Esse arquivo pode ser incluído onde vocês quiserem, ele contém diversas funções matemáticas úteis que podem facilitar as contas de vocês. Sintam-se à vontade para incrementá-lo se acharem necessário. As funções usadas nesse arquivo são feitas usando o que chamamos de [operador ternário](https://linguagemc.com.br/o-operador-ternario-em-c/), que nada mais é que uma forma de simplificar if's e else's.
 -   `main.cpp`: Aqui vocês farão a inicialização dos periféricos e o _loop_ principal do programa.
 -   `led.cpp`: Aqui vocês implementarão as funções relacionadas ao LED.
 -   `button.cpp`: Aqui vocês implementarão as funções relacionadas ao botão.
 -   `joystick.cpp`: Aqui vocês implementarão as funções relacionadas ao joystick, sendo elas a inicialização do ADC e a leitura de seu valor.
+-   `test_buttons.cpp`: Um teste para verificar se a classe Button está funcionando corretamente.
+-   `test_led.cpp`: Um teste para verificar se a classe Led está funcionando corretamente.
+-   `test_joystick.cpp`: Um teste para verificar se a classe Joystick está funcionando corretamente.
 
-> Os arquivos do código de vocês se encontram nas pastas `src/` (onde ficam os `.cpp`) e `inc/` (onde ficam os `.hpp`). Os arquivos `.hpp` já estão prontos.
+> Os arquivos do código de vocês se encontram nas pastas `src/` (onde ficam os `.cpp`) e `include/` (onde ficam os `.hpp`). Os arquivos `.hpp` já estão prontos. Os testes estão na pasta `tests/src`
 
 ## 🧱 Funções
 
@@ -84,23 +89,27 @@ Estrutura dos arquivos:
 
 > Consulte o [STM32Guide](https://github.com/ThundeRatz/STM32Guide) para implementar essas funções.
 
--   **1.** `led::set(bool state)`: Função que liga ou desliga o LED.
+-   **1.** `led::on()`: Função que liga o LED.
 
--   **2.** `button::is_pressed()`: Função que retorna se o botão foi pressionado ou não.
+-   **2.** `led::off()`: Função que desliga o LED.
 
--   **3.** `joystick::init()`: Função que inicia o ADC do joystick.
+-   **3.** `led::toggle()`: Função que troca o estado do LED.
 
--   **4.** `joystick::get_x()`: Função que retorna o valor do eixo X do joystick.
+-   **4.** `button::is_pressed()`: Função que retorna se o botão foi pressionado ou não.
 
--   **5.** `joystick::get_y()`: Função que retorna o valor do eixo Y do joystick.
+-   **5.** `joystick::init()`: Função que inicia o ADC do joystick.
 
--   **6.** `joystick::is_pressed()`: Função que retorna se o botão do joystick foi pressionado ou não.
+-   **6.** `joystick::get_x()`: Função que retorna o valor do eixo X do joystick.
+
+-   **7.** `joystick::get_y()`: Função que retorna o valor do eixo Y do joystick.
+
+-   **8.** `joystick::is_pressed()`: Função que retorna se o botão do joystick foi pressionado ou não.
 
 ## Apêndice A - Configuração do STM32CubeMX
 
 ### Configurando LED
 
-O LED utilizará o GPIO do pino PC12. Para configurá-lo, clique com o botão esquerdo do mouse sobre ele, e depois selecione a opção GPIO_Output. Essa configuração permite usar o LED como um pino de saída.
+O LED utilizará o GPIO do pino PC13. Para configurá-lo, clique com o botão esquerdo do mouse sobre ele, e depois selecione a opção GPIO_Output. Essa configuração permite usar o LED como um pino de saída.
 
 > Mais detalhes podem ser encontrados no [STM32Guide - GPIO](https://github.com/ThundeRatz/STM32Guide?tab=readme-ov-file#gpio)
 
@@ -110,7 +119,7 @@ O Botão 1 utilizará o GPIO do pino PA8 e o Botão 2 utilizará o GPIO do pino 
 
 > Mais detalhes podem ser encontrados no [STM32Guide - GPIO](https://github.com/ThundeRatz/STM32Guide?tab=readme-ov-file#gpio)
 
-### Configurando ADC
+### Configurando ADC (Joystick)
 
 Para configurar o ADC consulte o STM32Guide.
 
