@@ -1,277 +1,126 @@
-<!-- markdownlint-disable -->
-<div align="center">
+# Enunciado - Embarcados
 
-# Template para Projetos STM32
+Nessa tarefinha vocês devem fazer um programa para controlar o microcontrolador `STM32F103C8T6` da STMicroelectronics.
 
-Template para projetos com microcontroladores STM32 usando STM32CubeMX e CMake
+Para realizar a tarefinha, é necessário antes seguir os tutoriais existentes na pasta `tutoriais/`. Lá, você encontra o [guia de instalação](tutoriais/guia_de_instalacao.md) para instalar os programas necessários para realizar a tarefinha. Dentro da mesma pasta, no arquivo [teoria](tutoriais/teoria.md), você encontra também a teoria, que explica os conceitos de sistemas embarcados e como é feita a programação de dispositivos embarcados com microcontroladores usados na ThundeRatz.
 
-</div>
+## Índice
 
-<div align="center">
-  <a href="https://www.st.com/en/development-tools/stm32cubemx.html"><img alt="Usa STM32CubeMX" src="https://img.shields.io/badge/usa-stm32cubemx-blue?style=for-the-badge&labelColor=38c1d0&color=45a4b8" height="30"></a>
-  <a href="https://en.wikipedia.org/wiki/Embedded_system"><img alt="Para Sistemas Embarcados" src="https://img.shields.io/badge/para-sistemas_embarcados-blue?style=for-the-badge&labelColor=adec37&color=27a744" height="30"></a>
-  <a href="LICENSE"><img alt="Licença MIT" src="https://img.shields.io/badge/licença-MIT-blue?style=for-the-badge&labelColor=ef4041&color=c1282d" height="30"></a>
-</div>
-<!-- markdownlint-restore -->
+1. [Qual comportamento deve ser implementado](#-qual-comportamento-deve-ser-implementado)
 
-## 📑 Sumário
+2. [Execução da tarefa](#%EF%B8%8F-execução-da-tarefa)
 
-- [📑 Sumário](#-sumário)
-- [📁 Estrutura de Pastas](#-estrutura-de-pastas)
-- [🛠 Configuração](#-configuração)
-- [🔨 Compilação](#-compilação)
-- [🚀 Execução](#-execução)
-- [🧪 Testes](#-testes)
-- [🐛 Depuração](#-depuração)
-- [💄 Formatação](#-formatação)
-- [📦 Submódulos](#-submódulos)
-- [🐋 Docker](#-docker)
-- [👥 Contribuição](#-contribuição)
-- [🙌 Agradecimentos](#-agradecimentos)
+    - 1ª parte: Configurando os arquivos do Cube
+    - 2ª parte: Escrevendo o código
 
-## 📁 Estrutura de Pastas
+3. [Organização do repositório](#%EF%B8%8F-organização-do-repositório)
 
-- **.docker/** - Configurações e scripts do Docker
-- **.github/** - Configurações do GitHub Actions
-- **.vscode/** - Configurações do Visual Studio Code
-- **build/** - Arquivos gerados durante a compilação (não versionado)
-- **cmake/** - Funções customizadas para CMake
-- **config/** - Configurações do projeto
-- **cube/** - Projeto do STM32CubeMX (.ioc e arquivos gerados)
-- **include/** - Cabeçalhos
-- **docs/** - Documentação gerada (não versionado)
-- **lib/** - Submódulos e bibliotecas externas
-- **src/** - Código fonte principal da aplicação
-- **test/** - Testes
+    - Estrutura dos arquivos
 
-## 🛠 Configuração
+4. [Funções](#-funções)
 
-### 1. Projeto CubeMX
+    - Funções prontas
+    - Funções a serem implementadas
 
-1. Crie um novo projeto na pasta `cube/`
-2. Configurações:
-    - **Project > Application Structure:** Basic
-    - **Project > Toolchain/IDE:** CMake
-    - **Code Generator > Generate peripheral initialization:** Pair of .c/.h
-    - **Code Generator > Delete previous generated files:** Ativado
+-   [Apêndice A - Configuração do STM32CubeMX](#apêndice-a---configuração-do-stm32cubemx)
 
-### 2. CMakeLists.txt
+    -   Configurando Led
+    -   Configurando Botões
+    -   Configurando ADC
 
-Edite o arquivo principal `CMakeLists.txt` com as informações do seu projeto:
+## ✨ Qual comportamento deve ser implementado
 
-```cmake
-# Nome do projeto (igual ao arquivo .ioc sem extensão)
-set(CMAKE_PROJECT_NAME meu_projeto)
+A tarefinha consiste em um controle de videogame, que contém um analógico, um LED e dois botões. A placa usada é a plaquinha do nRFDongle, do ThunderVolt. O analógico será lido, ter seu valor processado e enviado pelo USB.
 
-# Versão da placa (opcional)
-set(BOARD_VERSION "")
-```
+> O analógico é um componete que possui dois potenciômetros, um para cada eixo, X e Y. Leia mais sobre analógicos [aqui](https://mundoprojetado.com.br/como-e-um-joystick-por-dentro/) e sobre potenciômetros [aqui](https://pt.wikipedia.org/wiki/Potenci%C3%B4metro).
 
-## 🔨 Compilação
+-   [Vídeo de demonstração](https://youtube.com/shorts/XRpv_pIOct8?feature=share)
 
-Antes de iniciar, crie uma pasta `build/` na raiz do projeto
+## 🖥️ Execução da tarefa
 
-```bash
-mkdir build
-cd build
-```
+Certo, mas como fazer isso?
 
-Dentro dela, configure o ambiente com
+### **1ª parte** - Configurando os arquivos do Cube
 
-```bash
-cmake ..
-```
+Como vocês viram na aulinha de embarcados, antes de programar o seu microcontrolador é preciso configurar o arquivo do cube, setando os pinos do micro com as funções que precisamos no nosso projeto. O arquivo a ser configurado é o `dongle_joystick_v1.ioc` localizado na pasta `cube/`. As instruções de configuração do Cube estão mais detalhadas no [Apêndice A](#apêndice-a---configuração-do-stm32cubemx).
+Configurem os pinos conforme descrito abaixo:
 
-Depois, compile o projeto
+-   LED - GPIO Output - PC12
+-   Botão 1 - GPIO Input - PA8
+-   Botão 2 - GPIO Input - PB15
 
-```bash
-make -j
-```
+-   Joystick X - ADC - PA1 (ADC1_IN1)
+-   Joystick Y - ADC - PA2 (ADC1_IN2)
+-   Botão Joystick - GPIO Output - PA9
 
-> O parâmetro `-j` ativa a compilação paralela, usando mais núcleos do seu processador
+> Em algumas plaquinhas o botão do joystick está com problema :p
 
-### Limpar arquivos
+Os outros periféricos da plaquinha, como o USB já estão configurados.
 
-```bash
-make clear       # Código do usuário
-make clear_cube  # Bibliotecas Cube
-make clear_all   # Tudo
-```
+### **2ª parte** - Escrevendo o código
 
-### Manual
+Usando um editor de texto (de preferência o VSCode), implemente as funções dos arquivos `led.cpp`, `button.cpp`, `joystick.cpp`. A implementação do USB já está feita.
 
-Para obter uma lista completa de comandos, use
+## 🗂️ Organização do repositório
 
-```bash
-make help
-```
+Estrutura dos arquivos:
 
-## 🚀 Execução
+-   `mcu.hpp` e `mcu.cpp`: Esses arquivos possuem as funções que configuram o microcontrolador, e NÃO devem ser editados.
+-   `utils.hpp`: Esse arquivo pode ser incluído onde vocês quiserem, ele contém diversas funções matemáticas úteis que podem facilitar as contas de vocês. Sintam-se à vontade para incrementá-lo se acharem necessário. As funções usadas nesse arquivo são feitas usando o que chamamos de operador ternário, que nada mais é que uma forma de simplificar if's e else's.
+-   `main.cpp`: Aqui vocês farão a inicialização dos periféricos e o _loop_ principal do programa.
+-   `led.cpp`: Aqui vocês implementarão as funções relacionadas ao LED.
+-   `button.cpp`: Aqui vocês implementarão as funções relacionadas ao botão.
+-   `joystick.cpp`: Aqui vocês implementarão as funções relacionadas ao joystick, sendo elas a inicialização do ADC e a leitura de seu valor.
 
-### Gravando via [STM32CubeProgrammer](https://www.st.com/en/development-tools/stm32cubeprog.html)
+> Os arquivos do código de vocês se encontram nas pastas `src/` (onde ficam os `.cpp`) e `inc/` (onde ficam os `.hpp`). Os arquivos `.hpp` já estão prontos.
 
-```bash
-make flash
-```
+## 🧱 Funções
 
-### Gravando via J-Link
+### Funções prontas
 
-```bash
-make jflash
-```
+1. `mcu::init()`: Função essencial do programa, está implementada no arquivo `mcu.cpp`. Nela serão inicializadados elementos como os pinos do botão e o clock do sistema. Essa função deve ser a primeira coisa a ser chamada no seu código.
 
-## 🧪 Testes
+### Funções a serem implementadas
 
-Cada teste deve ser um arquivo independente na pasta `test/` com sua própria função `main()`
+> Consulte o [STM32Guide](https://github.com/ThundeRatz/STM32Guide) para implementar essas funções.
 
-Para compilar um teste específico, use `make meu_teste`. Por exemplo, para compilar o teste `test/test_led.c`:
+-   **1.** `led::set(bool state)`: Função que liga ou desliga o LED.
 
-```bash
-make test_led
-```
+-   **2.** `button::is_pressed()`: Função que retorna se o botão foi pressionado ou não.
 
-Para gravar um teste específico, use `make flash_meu_teste`:
+-   **3.** `joystick::init()`: Função que inicia o ADC do joystick.
 
-```bash
-make flash_test_led
-```
+-   **4.** `joystick::get_x()`: Função que retorna o valor do eixo X do joystick.
 
-Para compilar todos os testes, use `make test_all`:
+-   **5.** `joystick::get_y()`: Função que retorna o valor do eixo Y do joystick.
 
-```bash
-make test_all
-```
+-   **6.** `joystick::is_pressed()`: Função que retorna se o botão do joystick foi pressionado ou não.
 
-## 🐛 Depuração
+## Apêndice A - Configuração do STM32CubeMX
 
-Para debugar o projeto usando o [`gdb`](https://www.gnu.org/software/gdb), primeiro instale o `gdb-multiarch`, no Ubuntu, execute:
+### Configurando LED
 
-```bash
-sudo apt install gdb-multiarch
-```
+O LED utilizará o GPIO do pino PC12. Para configurá-lo, clique com o botão esquerdo do mouse sobre ele, e depois selecione a opção GPIO_Output. Essa configuração permite usar o LED como um pino de saída.
 
-1. Configure o build para debug:
+> Mais detalhes podem ser encontrados no [STM32Guide - GPIO](https://github.com/ThundeRatz/STM32Guide?tab=readme-ov-file#gpio)
 
-```bash
-cmake .. -DBUILD_TYPE=Debug
-```
+### Configurando Botão
 
-2. Gerar configurações de debug:
+O Botão 1 utilizará o GPIO do pino PA8 e o Botão 2 utilizará o GPIO do pino PB15. Para configurá-los, clique com o botão esquerdo do mouse sobre eles, e depois selecione a opção GPIO_Input. Essa configuração permite usar o botão como um pino de entrada.
 
-```bash
-make debug
-```
+> Mais detalhes podem ser encontrados no [STM32Guide - GPIO](https://github.com/ThundeRatz/STM32Guide?tab=readme-ov-file#gpio)
 
-Para debugar um teste, use `make debug_meu_teste`:
+### Configurando ADC
 
-```bash
-make debug_test_led
-```
+Para configurar o ADC consulte o STM32Guide.
 
-3. Use a extensão Cortex-Debug no VS Code com uma das configurações:
+-   [STM32Guide - ADC](https://github.com/ThundeRatz/STM32Guide#adc-e-dma)
 
-- [J-Link](https://www.segger.com/downloads/jlink/)
-- [OpenOCD](https://openocd.org/) (`sudo apt install openocd`)
-- [ST-Util](https://github.com/stlink-org/stlink) (`sudo apt install stlink-tools`)
+Recomendações para configuração do ADC:
 
-## 💄 Formatação
+-   Sampling Time: 239.5 ciclos
+-   ADC1 and ADC2 global interrupts: Disabled
 
-### Formatação Automática
+## Sobre a Tarefinha
 
-Para formatar o projeto, usamos o `clang-format`. As configurações estão no arquivo `.clang-format`. Para instalar, no Ubuntu, execute:
-
-```bash
-sudo apt install clang-format
-```
-
-Para formatar o projeto, execute o seguinte comando na pasta `build`:
-
-```bash
-make format
-```
-
-Usamos o `clang-tidy` para seguir as melhores práticas de código. As regras de linting estão no arquivo `.clang-tidy`. Para instalar, no Ubuntu, execute:
-
-```bash
-sudo apt install clang-tidy
-```
-
-Para rodar o linter é preciso compilar o projeto com a variável `LINTER_MODE` do CMake. Para habilitar o linter, execute:
-
-```
-cmake .. -DLINTER_MODE=ON
-```
-
-Para desabilitar o linter, execute:
-
-```
-cmake .. -DLINTER_MODE=OFF
-```
-
-Também é possível rodar o linter e deixar ele corrigir automaticamente o código:
-
-```
-cmake .. -DLINTER_MODE=FIX
-```
-
-E então basta compilar o projeto normalmente:
-
-```bash
-make -j
-```
-
-## 📦 Submódulos
-
-### Adicionar novo submódulo
-
-```bash
-git submodule add --name lib_nome git@github.com:usuario/lib_nome.git lib/lib_nome
-```
-
-### Atualizar submódulos
-
-```bash
-git submodule update --init --recursive
-```
-
-## 🐋 Docker
-
-Para configuração do Docker no seu projeto, veja https://github.com/ThundeRatz/stm32cubemx_docker
-
-### Compilar usando container
-
-```bash
-docker compose run build
-```
-
-### Ambiente de desenvolvimento
-
-```bash
-docker compose run dev
-# Dentro do container:
-mkdir build
-cd build
-cmake ..
-make -j
-```
-
-## 👥 Contribuição
-
-1. Commits devem usar emojis descritivos:
-    - 🐛 Correções de bugs
-    - ✨ Novas funcionalidades
-    - 📝 Documentação
-    - 🎨 Formatação de código
-2. Siga o [GitHub Flow](https://guides.github.com/introduction/flow/)
-3. Mantenha a coesão do código e documentação
-4. Teste suas alterações antes de submeter pull requests
-
-
-## 🙌 Agradecimentos
-
-Este projeto não teria sido possível sem o suporte e colaboração da equipe **ThundeRatz** como um todo.
-As decisões de arquitetura e organização foram fortemente baseadas nas boas práticas adotadas nos projetos da equipe, garantindo um código mais modular, eficiente e escalável.
-
-
-Também gostaríamos de reconhecer o projeto **[Micras](https://github.com/Team-Micras/MicrasFirmware)**, cujo desenvolvimento serviu de base para diversas decisões adotadas aqui.
-As discussões técnicas e desafios enfrentados no Micras ajudaram a moldar a estrutura e as boas práticas deste template.
+Entendemos que o tópico de embarcados é algo muito novo para a maioria de vocês, e que pode ser um pouco difícil de entender. Por isso, não se preocupem se não entenderem tudo de primeira, o importante é tentarem entender. Se tiverem dúvidas, não hesitem em mandar mensagens para seus veteranos, estamos aqui para ajudá-los. No mais é isso, boa tarefinha a todos!

@@ -4,10 +4,10 @@
  * @brief MCU related
  */
 
-#ifndef MCU_HPP
-#define MCU_HPP
+#ifndef __MCU_HPP__
+#define __MCU_HPP__
 
-#include <cstdint>
+#include <stdint.h>
 
 /*****************************************
  * Public Function Prototypes
@@ -21,13 +21,12 @@ extern "C" {
 void SystemClock_Config(void);
 }
 
-namespace hal {
 class mcu {
 public:
     /**
      * @brief Initializes MCU and some peripherals.
      */
-    static void init();
+    static void init(void);
 
     /**
      * @brief Put the MCU to sleep.
@@ -36,5 +35,4 @@ public:
      */
     static void sleep(uint32_t ms);
 };
-};  // namespace hal
-#endif  // MCU_HPP
+#endif  // __MCU_HPP__
