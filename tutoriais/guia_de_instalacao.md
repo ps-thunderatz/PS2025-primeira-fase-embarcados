@@ -21,7 +21,7 @@ Agora vamos de fato ao tutorial!
 
 # Windows
 
-## Instalando WSL
+## Instalando o WSL
 
 Para poder compilar e gravar nosso código no microcontrolador vamos usar o Subsistema do Windows para Linux (WSL) no qual temos acesso a uma distribuição Linux dentro do Windows para poder usar nosso código com mais comodidade.
 
@@ -41,7 +41,7 @@ Algumas ferramentas são necessárias para compilar e gravar nosso código. Para
  sudo apt install cmake make arm-none-eabi-gcc
 ```
 
-Para verificar se cada ferramenta foi instalada, use os seguintes comandos um de cada vez:
+Para verificar se cada ferramenta foi instalada, use os seguintes comandos, um de cada vez:
 
 ```bash
  cmake --version
@@ -60,7 +60,7 @@ Você verá a versão de cada ferramenta, se elas foram instaladas corretamente.
 
 ## STM32CubeMX
 
-Faça o download do [STM23CubeMX](https://www.st.com/b/en/development-tools/stm32cubemx.html). Será necessário criar uma conta no site da ST e então clicar em "Get Software" e selecionar a versão 6.13 na opção "Select version" e siga as instruções do instalador. Em determinada parte da instalação, o instalador irá mostrar o caminho em que ele irá instalar o programa, copie esse caminho.
+Faça o download do [STM23CubeMX](https://www.st.com/b/en/development-tools/stm32cubemx.html). Será necessário criar uma conta no site da ST e então clicar em "Get Software" e selecionar a versão 6.13 na opção "Select version" e siga as instruções do instalador. Em determinada parte o instalador irá mostrar o caminho em que ele vai instalar o CubeMX, copie esse caminho.
 
 Agora será necessário criar o CUBE_PATH do STM32CubeMX no Ubuntu.
 
@@ -76,9 +76,11 @@ No arquivo que abrir, cole a seguinte a linha no final do arquivo retirando o `C
  export CUBE_PATH="/mnt/c/'caminho que você copiou na instalação do CubeMX'"
 ```
 Exemplo: `export CUBE_PATH="/mnt/c/Program Files/STMicroelectronics/STM32Cube/STM32CubeMX"`
+
 Observe como o caminho do exemplo tem todas barras que dividem as pastas inclinadas para a direta `/`.
 
 Em seguida, salve o arquivo.
+
 3. Voltando no terminal dê o seguinte comando:
 
 ```bash
@@ -112,6 +114,7 @@ No arquivo que abrir, cole o seguinte comando no final do arquivo completando-o 
 ```
 
 Exemplo: `export PATH=$PATH:"/mnt/c/Program Files/STMicroelectronics/STM32Cube/STM32CubeProgrammer/bin"`
+
 Observe como o caminho do exemplo tem todas barras que dividem as pastas inclinadas para a direta `/`.
 
 3. Volte no terminal do Ubuntu e execute o seguinte comando:
@@ -131,7 +134,7 @@ Algo assim deve aparecer:
 ```bash
  -------------------------------------------------------------------
                         STM32CubeProgrammer v2.2.1
-   -------------------------------------------------------------------
+ -------------------------------------------------------------------
 
 STM32CubeProgrammer version: 2.2.1
 ```
