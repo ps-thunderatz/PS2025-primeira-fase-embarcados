@@ -16,6 +16,8 @@ Entrando mais no âmbito da equipe, temos alguns de nossos robôs que lidam os d
 
 Para saber mais sobre isso, confira o vídeo abaixo sobre introdução a embarcados.
 
+Além disso, teremos a gravação da nossa aulinha de embarcados, que aborda os temas abaixo, mas de forma geral
+
 [![Alt text](https://img.youtube.com/vi/kd728Egntjs/0.jpg)](https://www.youtube.com/watch?v=kd728Egntjs)
 
 ## HAL e Cube
