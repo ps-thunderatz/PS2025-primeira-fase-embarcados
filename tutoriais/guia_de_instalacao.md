@@ -21,129 +21,120 @@ Agora vamos de fato ao tutorial!
 
 # Windows
 
-## GCC e Make
+## Instalando WSL
 
-No Windows, instale o [MSYS2](https://www.msys2.org/) seguindo as instruções presentes no site. Após isso, baixe o GCC e o Make utilizando o terminal do MSYS2 utilizando o seguinte comando:
+Para poder compilar e gravar nosso código no microcontrolador vamos usar o Subsistema do Windows para Linux (WSL) no qual temos acesso a uma distribuição Linux dentro do Windows para poder usar nosso código com mais comodidade.
 
-```bash
- pacman -S gcc make
-```
-
-Depois, vocês precisam colocar a pasta do MSYS2 nas variáveis de ambiente do Windows. Para isso, faça:
-
-  1. Vá para Painel de Controle > Sistema e Segurança > Sistema > Configurações avançadas do sistema.
-  2. Na janela que abriu, clique em "Variáveis de ambiente".
-  3. Na parte de "Variáveis do sistema", encontra a variável Path, selecione-a e clique em "Editar".
-  4. Clique em "Novo"
-  5. Digite o caminho para os executáveis MSYS2 (normalmente C:\msys64\usr\bin).
-  6. Mova o caminho para cima no PATH, deixando no primeiro lugar.
-  7. Clique em "Ok".
-
-Finalmente, para testar se a instalação foi feita corretamente, basta abrir o Prompt de Comando (não o MSYS2, o cmd mesmo) e insira o seguinte comando:
+Para instalar o WSL na distribuição Linux Ubuntu, rode o seguinte comando no terminal do Windows:
 
 ```bash
- gcc -v
+ wsl --install ubuntu
 ```
 
-Algo parecido com isso deve aparecer:
+Espere a instalação ser feita, e em seguida configure seu nome e usuário no sistema Ubuntu que você instalou.
+
+## Instalação de ferramentas
+
+Algumas ferramentas são necessárias para compilar e gravar nosso código. Para instalar elas, abra o terminal do Ubuntu e cole o seguinte comando:
 
 ```bash
- Using built-in specs.
- COLLECT_GCC=gcc
- COLLECT_LTO_WRAPPER=/usr/lib/gcc/x86_64-pc-msys/6.4.0/lto-wrapper.exe
- Target: x86_64-pc-msys
- Configured with: /msys_scripts/gcc/src/gcc-6.4.0/configure --build=x86_64-pc-msys --prefix=/usr --libexecdir=/usr/lib --enable-bootstrap --enable-shared --enable-shared-libgcc --enable-static --enable-version-specific-runtime-libs --with-arch=x86-64 --with-tune=generic --disable-multilib --enable-__cxa_atexit --with-dwarf2 --enable-languages=c,c++,fortran,lto --enable-graphite --enable-threads=posix --enable-libatomic --enable-libcilkrts --enable-libgomp --enable-libitm --enable-libquadmath --enable-libquadmath-support --enable-libssp --disable-win32-registry --disable-symvers --with-gnu-ld --with-gnu-as --disable-isl-version-check --enable-checking=release --without-libiconv-prefix --without-libintl-prefix --with-system-zlib --enable-linker-build-id --with-default-libstdcxx-abi=gcc4-compatible
- Thread model: posix
- gcc version 6.4.0 (GCC)
+ sudo apt install cmake make arm-none-eabi-gcc
 ```
 
-Nesse mesmo prompt, insira o seguinte comando:
+Para verificar se cada ferramenta foi instalada, use os seguintes comandos um de cada vez:
 
 ```bash
- make -v
+ cmake --version
 ```
-
-Algo parecido com isso deve aparecer também:
 
 ```bash
- GNU Make 4.2.1
- Built for x86_64-pc-msys
- Copyright (C) 1988-2016 Free Software Foundation, Inc.
- License GPLv3+: GNU GPL version 3 or later 
- This is free software: you are free to change and redistribute it.
- There is NO WARRANTY, to the extent permitted by law.
+ make --version
 ```
-
-## ARM-GCC
-
-Primeiramente, faça o download do [arm-gcc](https://developer.arm.com/-/media/Files/downloads/gnu-rm/10.3-2021.10/gcc-arm-none-eabi-10.3-2021.10-win32.exe?rev=29bb46cfa0434fbda93abb33c1d480e6&hash=B2C5AAE07841929A0D0BF460896D6E52) e siga a instruções normais do Windows.
-
-Após isso, é preciso colocar a pasta do arm-gcc nas variávies de ambiente do Windows (similar ao que foi feito com o MSYS2). Faça então:
- 1. Vá para Painel de Controle > Sistema e Segurança > Sistema > Configurações avançadas do sistema.
- 2. Na janela que abriu, clique em “Variáveis de ambiente”.
- 3. Na parte de “Variáveis do sistema”, encontra a variável Path, selecione-a e clique em “Editar”.
- 4. Clique em “Novo”.
- 5. Digite o caminho para os executáveis do ARM-GCC (provavelmente C:\Program Files (x86)\GNU Tools ARM Embedded\8 2021-q4-major\bin).
- 6. Clique em “OK”.
-
-Para testar se deu certo a instalação, digite no Promp de Comando (cmd):
 
 ```bash
  arm-none-eabi-gcc --version
 ```
 
-Algo parecido com isso deve aparecer:
+Você verá a versão de cada ferramenta, se elas foram instaladas corretamente.
+
+
+## STM32CubeMX
+
+Faça o download do [STM23CubeMX](https://www.st.com/b/en/development-tools/stm32cubemx.html). Será necessário criar uma conta no site da ST e então clicar em "Get Software" e selecionar a versão 6.13 na opção "Select version" e siga as instruções do instalador. Em determinada parte da instalação, o instalador irá mostrar o caminho em que ele irá instalar o programa, copie esse caminho.
+
+Agora será necessário criar o CUBE_PATH do STM32CubeMX no Ubuntu.
+
+1. Entre no terminal do Ubuntu.
+2. Dê o seguinte comando no terminal:
 
 ```bash
- arm-none-eabi-gcc.exe (GNU Tools for Arm Embedded Processors 10.3-2021-q4-major) 8 2.1 20181213 (release) [gcc-8-branch 267074 revision]
- Copyright (C) 2021 Free Software Foundation, Inc.
- This is free software; see the source for copying conditions.  There is NO
- warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ code ~/.bashrc
+```
+No arquivo que abrir, cole a seguinte a linha no final do arquivo retirando o `C:/`:
+
+```bash
+ export CUBE_PATH="/mnt/c/'caminho que você copiou na instalação do CubeMX'"
+```
+Exemplo: `export CUBE_PATH="/mnt/c/Program Files/STMicroelectronics/STM32Cube/STM32CubeMX"`
+Observe como o caminho do exemplo tem todas barras que dividem as pastas inclinadas para a direta `/`.
+
+Em seguida, salve o arquivo.
+3. Voltando no terminal dê o seguinte comando:
+
+```bash
+ source ~/.bashrc
+```
+4. Para verificar se o CUBE_PATH foi corretamente instalado execute o seguinte comando:
+
+```bash
+ echo $CUBE_PATH
 ```
 
-## STM32CubeMX e STM32CubeProgrammer
+Se tudo deu certo, ele mostrará o caminho que você colocou no CUBE_PATH.
 
-Faça o download do [STM23CubeMX](https://www.st.com/b/en/development-tools/stm32cubemx.html) e o [STM32CubeProgrammer](https://www.st.com/en/development-tools/stm32cubeprog.html). Será necessário criar uma conta no site da ST e então clicar em "Get Software" (escolha sempre a última versão - Latest Version). Siga a instruções do instalador normalmente.
+## STM32CubeProgrammer
 
-Agora será necessário adicionar o caminho do STM32CubeProgrammer na variável de ambiente Path (basicamente o que foi feito no gcc e msys2).
+Instale o [STM32CubeProgrammer](https://www.st.com/en/development-tools/stm32cubeprog.html). Será necessário logar em uma conta no site da ST e então clicar em "Get Software" (escolha a última versão - Latest Version) extraia e execute o instalador depois siga as instruções. Em determinada parte, o instalador mostrará o caminho em que irá instalar o CubeProgrammer, copie esse caminho para ser mais fácil configurar o PATH do CubeProgrammer.
 
-1. Vá para Painel de Controle > Sistema e Segurança > Sistema > Configurações avançadas do sistema.
-2. Na janela que abriu, clique em “Variáveis de ambiente”.
-3. Na parte de “Variáveis do sistema”, encontra a variável Path, selecione-a e clique em “Editar”.
-4. Clique em “Novo”.
-5. Digite o caminho para os executáveis do STM32CubeProgrammer (provavelmente C:\Program Files (x86)\STMicroelectronics\STM32Cube\STM32CubeProgrammer\bin).
-6. Clique em “OK”.
+Siga as seguintes instruções para configurar o PATH:
 
-Para o CubeMX, deve-se criar uma nova variável com o nome CUBE_PATH:
-
-1. Na janela de Variáveis de Ambiente, clique em "Novo"
-2. Digite CUBE_PATH como nome da variável
-3. Coloque o caminho do CUbeMX como valor da variável (normalmente C:\Program Files (x86)\STMicroelectronics\STM32Cube\STM32CubeMX)
-4. Clique em Ok. A variável deverá aparecer na lista de variáveis de ambiente.
-
-Para checarmos se o STM32CubeProgrammer foi instalado corretamente, abra um terminal qualquer e rode:
+1. Abra o terminal do Ubuntu.
+2. No terminal, execute o seguinte comando:
 
 ```bash
- STM32_Programmer_CLI --version
+ code ~/.bashrc
+```
+
+No arquivo que abrir, cole o seguinte comando no final do arquivo completando-o com o caminho que você copiou, com a observação de retirar o `C:/` e adicionar `/bin` no final:
+
+```bash
+ export PATH=$PATH:"/mnt/c/'caminho que você copiou na instalação do CubeMX'/bin"
+```
+
+Exemplo: `export PATH=$PATH:"/mnt/c/Program Files/STMicroelectronics/STM32Cube/STM32CubeProgrammer/bin"`
+Observe como o caminho do exemplo tem todas barras que dividem as pastas inclinadas para a direta `/`.
+
+3. Volte no terminal do Ubuntu e execute o seguinte comando:
+
+```bash
+ source ~/.bashrc
+```
+
+4. Para verificar se o PATH foi configurado corretamente, rode o seguinte comando no terminal do Ubuntu:
+
+```bash
+ STM32_Programmer_CLI.exe --version
 ```
 
 Algo assim deve aparecer:
 
 ```bash
  -------------------------------------------------------------------
-                        STM32CubeProgrammer v2.2.1                  
+                        STM32CubeProgrammer v2.2.1
    -------------------------------------------------------------------
 
 STM32CubeProgrammer version: 2.2.1
 ```
-
-E para ver se a variável CUBE_PATH foi criada corretamente, insira o seguinte comando:
-
-```bash
- echo %CUBE_PATH%
-```
-
-O caminho até o executável do CubeMX que você colocou será mostrado se tudo deu certo.
 
 # MacOs
 
@@ -257,7 +248,7 @@ E então, algo assim deve surgir:
 
 ```bash
  -------------------------------------------------------------------
-                        STM32CubeProgrammer v2.2.1                  
+                        STM32CubeProgrammer v2.2.1
       -------------------------------------------------------------------
 
 STM32CubeProgrammer version: 2.2.1
@@ -288,7 +279,7 @@ Como Linux envolve várias distribuições, para cada uma delas irei mostrar qua
 
 ```bash
  sudo dnf upgrade
- sudo dnf gcc make 
+ sudo dnf gcc make
 ```
 
 ### Arch Linux
@@ -466,7 +457,7 @@ E então, algo assim deve surgir:
 
 ```bash
  -------------------------------------------------------------------
-                        STM32CubeProgrammer v2.2.1                  
+                        STM32CubeProgrammer v2.2.1
       -------------------------------------------------------------------
 
 STM32CubeProgrammer version: 2.2.1
