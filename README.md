@@ -1,8 +1,9 @@
 # Enunciado - Embarcados
 
-Nessa tarefinha vocês devem fazer um programa para controlar o microcontrolador `STM32F103C8T6` da STMicroelectronics.
+Nessa tarefinha vocês devem fazer um programa para controlar o microcontrolador `STM32F103C8T6` ou bluepill da STMicroelectronics.
 
 Para realizar a tarefinha, é necessário antes seguir os tutoriais existentes na pasta `tutoriais/`. Lá, você encontra o [guia de instalação](tutoriais/guia_de_instalacao.md) para instalar os programas necessários para realizar a tarefinha. Dentro da mesma pasta, no arquivo [teoria](tutoriais/teoria.md), você encontra também a teoria, que explica os conceitos de sistemas embarcados e como é feita a programação de dispositivos embarcados com microcontroladores usados na ThundeRatz.
+Para a realização da tarefinha vocês devem criar uma branch separada da main com o nome "feature/joystick" e trabalharem dentro dela.
 
 ## Índice
 

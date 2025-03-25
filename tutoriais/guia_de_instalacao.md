@@ -38,7 +38,7 @@ Espere a instalação ser feita, e em seguida configure seu nome e usuário no s
 Algumas ferramentas são necessárias para compilar e gravar nosso código. Para instalar elas, abra o terminal do Ubuntu e cole o seguinte comando:
 
 ```bash
- sudo apt install cmake make arm-none-eabi-gcc
+ sudo apt install cmake make gcc-arm-none-eabi
 ```
 
 Para verificar se cada ferramenta foi instalada, use os seguintes comandos, um de cada vez:
